@@ -41,8 +41,8 @@ def get_current_temperature(city):
     
 def addAttributesOptions(gfile):
     atts = gfile.columns
-    tuAtts = tuple(" ")+tuple(atts)
-    attList = st.selectbox("choose the value column",tuAtts)
+    tuAtts = tuple(atts)
+    attList = st.selectbox("Choose the value column",tuAtts[2:])
     if not attList == " ":
         lat = gfile.geometry.y
         long = gfile.geometry.x
@@ -56,6 +56,8 @@ def addAttributesOptions(gfile):
         map.add_heatmap(data)
 with st.sidebar:
     st.markdown("<h1 style='color: black; text-align: center;'>Weather Map</h1>", unsafe_allow_html=True)
+    st.write("""Type a city name and press Enter.
+             Hover over the Pin to display weather data.""")
     baseList = st.selectbox("Choose your Basemap", ("Open Street Map", "Google HYBRID"))
     city = st.text_input("Enter a city name:")
 
