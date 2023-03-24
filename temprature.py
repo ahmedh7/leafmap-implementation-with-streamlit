@@ -23,6 +23,7 @@ def get_current_temperature(city):
     text = weather_data["current"]["condition"]["text"]
     humidity = weather_data["current"]["humidity"]
     pressure_mb = weather_data["current"]["pressure_mb"]
+    map.set_center(lon,lat)
 
     df = pd.DataFrame({
         "Country": [country],
@@ -36,9 +37,8 @@ def get_current_temperature(city):
     })
     gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.Longitude, df.Latitude))
     gdf = gdf.set_crs("EPSG:4326")
-    map.add_gdf(gdf)
-    map.set_center(lon,lat)
-
+    map.add_gdf(gdf,layer_name="City Pin",zoom_to_layer=False)
+    
 def addAttributesOptions(gfile):
     atts = gfile.columns
     tuAtts = tuple(" ")+tuple(atts)
@@ -48,39 +48,34 @@ def addAttributesOptions(gfile):
         long = gfile.geometry.x
         value = gfile[attList]
         length = len(lat)
+
         data = []
         for i in range(0,length):
             point = [lat[i],long[i],float(value[i])]
             data.append(point)
         map.add_heatmap(data)
-
 with st.sidebar:
-    st.markdown("<h1 style='color: aqua; text-align: center;'>AS MAP</h1>", unsafe_allow_html=True)
-
+    st.markdown("<h1 style='color: black; text-align: center;'>Weather Map</h1>", unsafe_allow_html=True)
     baseList = st.selectbox("Choose your Basemap", ("Open Street Map", "Google HYBRID"))
+    city = st.text_input("Enter a city name:")
+
+    st.markdown("<h1 style='color: black; text-align: center;'>Heat Map</h1>", unsafe_allow_html=True)
+    cities = st.file_uploader("Upload a GeoJSON file for the heatmap", type="geojson")
     if baseList == "Open Street Map":
         pass
     else:
         map.add_basemap("HYBRID") 
 
-    city = st.text_input("Enter a city name:")
     if city:
         get_current_temperature(city)
-
-
-
-    cities = st.file_uploader("Upload a GeoJSON file for the heatmap", type="geojson")
-
     if cities:
         gfile = gpd.read_file(cities)
         heat_data = [[row["geometry"].y, row["geometry"].x, row["temprature"]] for index, row in gfile.iterrows()]
         addAttributesOptions(gfile)
-        
-
-        if not city or cities:
-            map.set_center(31.,30.0444,zoom=6)
+        map.fit_bounds(map.get_bounds(), padding=(30, 30))
 
 
+    
 
 map.to_streamlit(height=500)
 
