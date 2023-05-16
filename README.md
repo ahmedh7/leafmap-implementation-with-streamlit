@@ -1,5 +1,5 @@
 # leafmap-implementation-with-streamlit-using-weather-api
-This is a sample project on static sample data from weather api (file named "tr.geojson". Built with python using leafmap library for webmaps.
+This is a sample project on static sample data from weather api (files named "tr.geojson" & "EgyptCitiesExampleData.geojson". Built with python using leafmap library for webmaps.
 
 ## App functionalities:
 
